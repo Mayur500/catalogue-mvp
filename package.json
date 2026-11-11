@@ -1,0 +1,18 @@
+{
+  "name": "catalogue-mvp",
+  "private": true,
+  "version": "1.0.0",
+  "workspaces": [
+    "backend",
+    "frontend"
+  ],
+  "scripts": {
+    "dev": "concurrently -n backend,frontend -c blue,green \"npm --workspace backend run dev\" \"npm --workspace frontend run dev\"",
+    "build": "npm --workspace backend run build && npm --workspace frontend run build",
+    "test": "npm --workspace backend run test && npm --workspace frontend run test -- --run",
+    "start": "concurrently -n backend,frontend -c blue,green \"npm --workspace backend run start\" \"npm --workspace frontend run preview -- --host 0.0.0.0 --port 4173\""
+  },
+  "devDependencies": {
+    "concurrently": "^9.0.1"
+  }
+}
