@@ -17,6 +17,10 @@ export type ProductSummaryResponse = {
   total: number;
 };
 
+export type FeaturedProductsResponse = {
+  featured: Product[];
+};
+
 export type ProductDetailResponse = {
   product: Product;
   related: Product[];

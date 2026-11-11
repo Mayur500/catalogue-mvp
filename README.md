@@ -21,6 +21,7 @@ Why this choice:
 - Product detail page with enquiry form
 - Backend email abstraction for sales notifications
 - Local fallback catalog to keep the app working even if the upstream API is unavailable
+- Local enquiry messages saved as `.eml` files in `backend/.outbox` for review without an email account
 
 ## Local setup
 
@@ -61,14 +62,14 @@ npm test
 
 ## Environment variables
 
-The app uses these values from the root `.env` file:
+The backend reads these values from the root `.env` file (copy `.env.example` first):
 
 - `PORT` — backend port
 - `FRONTEND_URL` — origin allowed by CORS for the frontend
 - `FAKE_STORE_API_BASE_URL` — upstream product source
 - `SMTP_HOST`, `SMTP_PORT`, `SMTP_USER`, `SMTP_PASS`, `SMTP_FROM` — optional SMTP configuration for real email delivery
 
-If SMTP credentials are not configured, the backend logs a simulated email and still returns a success message for local testing.
+`SALES_INBOX` sets the destination address. When `SMTP_HOST` and `SALES_INBOX` are set, enquiries are sent by SMTP (with credentials if your provider requires them). With the example values left blank, messages are rendered into `backend/.outbox` as `.eml` files and the customer sees a thank-you message. The example file contains no active credentials or paid-service dependency.
 
 ## Notes
 

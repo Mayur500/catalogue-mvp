@@ -86,8 +86,10 @@ router.get('/categories/:category', async (req, res) => {
     const category = req.params.category;
     const products = await getProductsByCategory(category);
     const featured = [...products].sort((left, right) => right.rating.rate - left.rating.rate).slice(0, 5);
+    const featuredIds = new Set(featured.map((product) => product.id));
+    const additional = products.filter((product) => !featuredIds.has(product.id));
 
-    res.json({ category, featured, products });
+    res.json({ category, featured, products: additional });
   } catch (error) {
     res.status(500).json({ message: 'Unable to load category products', error: error instanceof Error ? error.message : 'Unknown error' });
   }
@@ -95,10 +97,10 @@ router.get('/categories/:category', async (req, res) => {
 
 const enquirySchema = z.object({
   productId: z.number().int().positive(),
-  name: z.string().min(2),
-  email: z.string().email(),
-  phone: z.string().min(7),
-  message: z.string().min(10),
+  name: z.string().trim().min(2),
+  email: z.string().trim().email(),
+  phone: z.string().trim().min(7),
+  message: z.string().trim().min(10),
 });
 
 router.post('/enquiries', async (req, res) => {

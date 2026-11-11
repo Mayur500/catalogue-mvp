@@ -26,6 +26,8 @@
 - The initial design attempted to call the upstream API directly from the frontend; this was caught and corrected by enforcing the backend-only requirement.
 - The initial email flow was too dependent on real SMTP credentials. It was adjusted to support optional SMTP configuration and a local simulated fallback so the demo remains self-contained and reviewer-friendly.
 - A few UI assumptions around search routing and route encoding were corrected during review to ensure the category and search pages behave consistently.
+- A review found that the featured-products frontend expected a raw array while the backend returned `{ featured }`. The frontend test mock had encoded the wrong contract; it now matches the backend response and asserts that featured cards render.
+- The first local email fallback reported success without creating a reviewable message. It now writes an `.eml` artifact locally, and SMTP delivery uses an explicit `SALES_INBOX` configuration.
 
 ## Actual time spent
 

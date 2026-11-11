@@ -12,13 +12,13 @@ describe('Catalog app', () => {
       if (url.includes('/api/products/featured')) {
         return Promise.resolve({
           ok: true,
-          json: async () => [
+          json: async () => ({ featured: [
             { id: 1, title: 'Alpha', price: 10, description: 'Desc', category: "men's clothing", image: 'https://example.com/alpha.jpg', rating: { rate: 4.8, count: 22 } },
             { id: 2, title: 'Beta', price: 20, description: 'Desc', category: 'electronics', image: 'https://example.com/beta.jpg', rating: { rate: 4.7, count: 31 } },
             { id: 3, title: 'Gamma', price: 30, description: 'Desc', category: "women's clothing", image: 'https://example.com/gamma.jpg', rating: { rate: 4.5, count: 40 } },
             { id: 4, title: 'Delta', price: 40, description: 'Desc', category: 'jewelery', image: 'https://example.com/delta.jpg', rating: { rate: 4.4, count: 18 } },
             { id: 5, title: 'Epsilon', price: 50, description: 'Desc', category: 'electronics', image: 'https://example.com/epsilon.jpg', rating: { rate: 4.3, count: 12 } },
-          ],
+          ] }),
         });
       }
 
@@ -33,6 +33,23 @@ describe('Catalog app', () => {
         return Promise.resolve({
           ok: true,
           json: async () => ({ products: [{ id: 1, title: 'Alpha', price: 10, description: 'Desc', category: "men's clothing", image: 'https://example.com/alpha.jpg', rating: { rate: 4.8, count: 22 } }], featured: [], total: 1 }),
+        });
+      }
+
+      if (url.includes('/api/products/1')) {
+        return Promise.resolve({
+          ok: true,
+          json: async () => ({
+            product: { id: 1, title: 'Alpha', price: 10, description: 'Desc', category: "men's clothing", image: 'https://example.com/alpha.jpg', rating: { rate: 4.8, count: 22 } },
+            related: [],
+          }),
+        });
+      }
+
+      if (url.includes('/api/enquiries')) {
+        return Promise.resolve({
+          ok: true,
+          json: async () => ({ message: 'Thank you. Your enquiry has been submitted successfully.' }),
         });
       }
 
@@ -56,11 +73,34 @@ describe('Catalog app', () => {
     );
 
     await waitFor(() => expect(screen.getByText('Featured picks')).toBeInTheDocument());
+    expect(await screen.findByText('Alpha')).toBeInTheDocument();
+    expect(screen.getByText('Epsilon')).toBeInTheDocument();
 
     const searchInput = screen.getByPlaceholderText('Search products...');
     await user.type(searchInput, 'alpha');
     await user.click(screen.getByRole('button', { name: 'Search' }));
 
     await waitFor(() => expect(screen.getByText(/Search results/i)).toBeInTheDocument());
+    expect(await screen.findByText('Alpha')).toBeInTheDocument();
+  });
+
+  it('opens a product and submits an enquiry', async () => {
+    const user = userEvent.setup();
+    render(
+      <BrowserRouter>
+        <App />
+      </BrowserRouter>,
+    );
+
+    await user.click(await screen.findAllByRole('link', { name: 'View details' }).then((links) => links[0]));
+    expect(await screen.findByRole('heading', { name: 'Alpha' })).toBeInTheDocument();
+
+    await user.type(screen.getByPlaceholderText('Your name'), 'Jane Doe');
+    await user.type(screen.getByPlaceholderText('Your email'), 'jane@example.com');
+    await user.type(screen.getByPlaceholderText('Phone number'), '0400000000');
+    await user.type(screen.getByPlaceholderText('Tell us what you need'), 'Please send pricing and delivery details.');
+    await user.click(screen.getByRole('button', { name: 'Enquire' }));
+
+    expect(await screen.findByText(/Thank you/)).toBeInTheDocument();
   });
 });

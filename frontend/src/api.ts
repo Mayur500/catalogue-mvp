@@ -1,4 +1,4 @@
-import type { CategoryProductsResponse, CategoryResponse, Product, ProductDetailResponse, ProductSummaryResponse } from './types';
+import type { CategoryProductsResponse, CategoryResponse, FeaturedProductsResponse, Product, ProductDetailResponse, ProductSummaryResponse } from './types';
 
 const request = async <T>(path: string, options: RequestInit = {}): Promise<T> => {
   const response = await fetch(`/api${path}`, {
@@ -17,7 +17,7 @@ const request = async <T>(path: string, options: RequestInit = {}): Promise<T> =
   return (await response.json()) as T;
 };
 
-export const getFeaturedProducts = () => request<Product[]>('/products/featured').then((payload) => payload as Product[]);
+export const getFeaturedProducts = () => request<FeaturedProductsResponse>('/products/featured').then((payload) => payload.featured);
 
 export const getCategories = () => request<CategoryResponse>('/categories').then((payload) => payload.categories);
 
