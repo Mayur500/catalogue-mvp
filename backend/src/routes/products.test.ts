@@ -20,6 +20,15 @@ describe('Product catalog API', () => {
     expect(search.body.products.some((product: { title: string }) => product.title.toLowerCase().includes('shirt'))).toBeTruthy();
   });
 
+  it('returns additional category products without repeating its featured products', async () => {
+    const response = await request(app).get('/api/categories/electronics');
+
+    expect(response.status).toBe(200);
+    const featuredIds = response.body.featured.map((product: { id: number }) => product.id);
+    const additionalIds = response.body.products.map((product: { id: number }) => product.id);
+    expect(additionalIds.some((id: number) => featuredIds.includes(id))).toBe(false);
+  });
+
   it('submits a product enquiry and returns a thank you message', async () => {
     const response = await request(app).post('/api/enquiries').send({
       productId: 1,

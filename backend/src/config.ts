@@ -1,6 +1,7 @@
 import dotenv from 'dotenv';
+import { fileURLToPath } from 'node:url';
 
-dotenv.config();
+dotenv.config({ path: fileURLToPath(new URL('../../.env', import.meta.url)) });
 
 export const config = {
   port: Number(process.env.PORT ?? 4000),
@@ -11,4 +12,5 @@ export const config = {
   smtpUser: process.env.SMTP_USER,
   smtpPass: process.env.SMTP_PASS,
   smtpFrom: process.env.SMTP_FROM ?? 'noreply@catalogue.local',
+  salesInbox: process.env.SALES_INBOX,
 };
